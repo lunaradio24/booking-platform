@@ -1,7 +1,16 @@
 import { Grade } from 'src/booking/types/grade.type';
 import { ShowDate } from 'src/show-date/entities/show-date.entity';
-import { Column, CreateDateColumn, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
+@Entity({ name: 'seats' })
 export class Seat {
   @PrimaryGeneratedColumn()
   id: number;

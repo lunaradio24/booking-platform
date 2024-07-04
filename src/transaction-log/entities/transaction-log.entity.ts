@@ -1,7 +1,8 @@
-import { Column, CreateDateColumn, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { TransactionType } from '../types/transaction-type.type';
 import { User } from 'src/user/entities/user.entity';
 
+@Entity({ name: 'transaction_logs' })
 export class TransactionLog {
   @PrimaryGeneratedColumn()
   id: number;

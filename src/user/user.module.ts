@@ -10,7 +10,7 @@ import { UserService } from './user.service';
 @Module({
   imports: [
     JwtModule.registerAsync({
-      useFactory: (config: ConfigService) => ({ secret: config.get<string>('JWT_SECRET_KEY') }),
+      useFactory: (config: ConfigService) => ({ secret: config.get<string>('JWT_PASSPORT_KEY') }),
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([User]),

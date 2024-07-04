@@ -24,13 +24,13 @@ export class Show {
   image: string;
 
   @Column()
-  schedule: Date[];
+  schedule: string;
 
   @Column()
   runtime: number;
 
   @Column()
-  ticketPrices: number[];
+  ticketPrices: string;
 
   @CreateDateColumn()
   createdAt: Date;

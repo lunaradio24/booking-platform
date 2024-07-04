@@ -11,7 +11,7 @@ import { Role } from '../types/userRole.type';
 import { Provider } from '../types/passportProvider.type';
 import { Booking } from 'src/booking/entities/booking.entity';
 import { TransactionLog } from 'src/transaction-log/entities/transaction-log.entity';
-import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
+import { RefreshToken } from 'src/refresh-token/entities/refresh-token.entity';
 
 @Entity({ name: 'users' })
 export class User {

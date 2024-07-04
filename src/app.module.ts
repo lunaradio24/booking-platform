@@ -12,6 +12,13 @@ import { SeatModule } from './seat/seat.module';
 import { RefreshTokenModule } from './refresh-token/refresh-token.module';
 import { TransactionLogModule } from './transaction-log/transaction-log.module';
 import { ShowDateService } from './show-date/show-date.service';
+import { Booking } from './booking/entities/booking.entity';
+import { RefreshToken } from './refresh-token/entities/refresh-token.entity';
+import { Show } from './show/entities/show.entity';
+import { Seat } from './seat/entities/seat.entity';
+import { ShowDate } from './show-date/entities/show-date.entity';
+import { TransactionLog } from './transaction-log/entities/transaction-log.entity';
+import { ShowService } from './show/show.service';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -22,7 +29,7 @@ const typeOrmModuleOptions = {
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     database: configService.get('DB_NAME'),
-    entities: [User],
+    entities: [User, Booking, RefreshToken, Show, ShowDate, Seat, TransactionLog],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),
@@ -34,7 +41,7 @@ const typeOrmModuleOptions = {
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        JWT_SECRET_KEY: Joi.string().required(),
+        JWT_PASSPORT_KEY: Joi.string().required(),
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_HOST: Joi.string().required(),
@@ -53,6 +60,6 @@ const typeOrmModuleOptions = {
     TransactionLogModule,
   ],
   controllers: [],
-  providers: [ShowDateService],
+  providers: [ShowService, ShowDateService],
 })
 export class AppModule {}

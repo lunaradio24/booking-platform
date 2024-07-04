@@ -3,6 +3,7 @@ import { Show } from 'src/show/entities/show.entity';
 import {
   Column,
   CreateDateColumn,
+  Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -10,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+@Entity({ name: 'show_dates' })
 export class ShowDate {
   @PrimaryGeneratedColumn()
   id: number;
