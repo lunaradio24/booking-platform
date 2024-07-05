@@ -2,6 +2,8 @@ import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import _ from 'lodash';
+import { SignInDto } from 'src/user/dto/sign-in.dto';
+import { SignUpDto } from 'src/user/dto/sign-up.dto';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
@@ -13,7 +15,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signUp(email: string, password: string) {
+  async signUp(signUpDto: SignUpDto) {
+    const { email, password } = signUpDto;
+
     const existingUser = await this.userService.findByEmail(email);
     if (existingUser) {
       throw new ConflictException('이미 해당 이메일로 가입된 사용자가 있습니다!');
@@ -26,11 +30,13 @@ export class AuthService {
     });
   }
 
-  async signIn(email: string, password: string) {
+  async signIn(signInDto: SignInDto) {
+    const { email, password } = signInDto;
     const user = await this.userRepository.findOne({
       select: ['id', 'email', 'password'],
       where: { email },
     });
+
     if (_.isNil(user)) {
       throw new UnauthorizedException('이메일을 확인해주세요.');
     }
@@ -44,4 +50,6 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+
+  async signOut() {}
 }
