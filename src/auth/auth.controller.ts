@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { SignInDto } from 'src/user/dto/sign-in.dto';
-import { SignUpDto } from 'src/user/dto/sign-up.dto';
+import { SignInDto } from './dto/sign-in.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -9,7 +9,11 @@ export class AuthController {
 
   @Post('sign-up')
   async signUp(@Body() signUpDto: SignUpDto) {
-    return await this.authService.signUp(signUpDto);
+    const newUser = await this.authService.signUp(signUpDto);
+    return {
+      message: '회원가입을 완료했습니다.',
+      data: newUser,
+    };
   }
 
   @Post('sign-in')
