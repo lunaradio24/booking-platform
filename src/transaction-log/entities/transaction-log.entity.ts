@@ -16,6 +16,9 @@ export class TransactionLog {
   @Column({ type: 'enum', enum: TransactionType })
   type: TransactionType;
 
+  @Column({ type: 'int' })
+  amount: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -1,5 +1,5 @@
 export enum Provider {
-  Local,
-  Naver,
-  Kakao,
+  LOCAL = 'LOCAL',
+  NAVER = 'NAVER',
+  KAKAO = 'KAKAO',
 }

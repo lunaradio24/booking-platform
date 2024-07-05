@@ -33,13 +33,13 @@ export class User {
   @Column({ type: 'varchar', unique: true, nullable: true })
   socialId: string;
 
-  @Column({ type: 'enum', enum: Provider, default: Provider.Local })
+  @Column({ type: 'enum', enum: Provider, default: Provider.LOCAL })
   provider: Provider;
 
   @Column({ type: 'int', default: 1000000 })
   points: number;
 
-  @Column({ type: 'enum', enum: Role, default: Role.User })
+  @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
 
   @CreateDateColumn()

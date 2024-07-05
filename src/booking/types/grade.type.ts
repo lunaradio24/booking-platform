@@ -1,6 +1,6 @@
 export enum Grade {
-  VIP,
-  R,
-  S,
-  A,
+  VIP = 'VIP',
+  R = 'R',
+  S = 'S',
+  A = 'A',
 }
