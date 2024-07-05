@@ -12,14 +12,19 @@ import { TransactionType } from 'src/transaction-log/types/transaction-type.type
 import { ConfigService } from '@nestjs/config';
 import { WELCOME_POINTS } from './constants/sign-up.constant';
 import { TransactionLogService } from 'src/transaction-log/transaction-log.service';
+import { sign } from 'jsonwebtoken';
+import { RefreshToken } from 'src/refresh-token/entities/refresh-token.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(RefreshToken)
+    private readonly tokenRepository: Repository<RefreshToken>,
     private readonly userService: UserService,
     private readonly transactionService: TransactionLogService,
+    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private dataSource: DataSource,
   ) {}
@@ -34,11 +39,11 @@ export class AuthService {
     }
 
     // 비밀번호 해싱
-    const hashedPassword = await hash(password, 10);
+    const hashRounds = Number(this.configService.get('HASH_ROUNDS'));
+    const hashedPassword = await hash(password, hashRounds);
 
     // 트랜잭션
     let newUser: User;
-    const config = new ConfigService();
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -51,7 +56,7 @@ export class AuthService {
 
       // 거래 기록
       await this.transactionService.create({
-        senderId: config.get('ADMIN_ID'),
+        senderId: this.configService.get('ADMIN_ID'),
         receiverId: newUser.id,
         type: TransactionType.CHARGE,
         amount: WELCOME_POINTS,
@@ -88,14 +93,41 @@ export class AuthService {
       throw new UnauthorizedException('비밀번호를 확인해주세요.');
     }
 
-    // Access Token 발급
-    const payload = { email, sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    // Access Token, Refresh Token 발급
+    const payload = { userId: user.id, email };
+    const accessToken = sign(payload, this.configService.get('ACCESS_TOKEN_SECRET_KEY'));
+    const refreshToken = sign(payload, this.configService.get('REFRESH_TOKEN_SECRET_KEY'));
+
+    // Refresh Token Hashing 후 DB에 저장
+    const hashRounds = Number(this.configService.get('HASH_ROUNDS'));
+    const hashedRefreshToken = await hash(refreshToken, hashRounds);
+    await this.tokenRepository.save({
+      userId: user.id,
+      token: hashedRefreshToken,
+    });
+
+    // 반환 정보
+    return { accessToken, refreshToken };
   }
 
   async signOut() {}
 
   async renewTokens() {}
+
+  // 등록된 유저인지 검증
+  async validateUser(signInDto: SignInDto) {
+    const { email, password } = signInDto;
+
+    // 등록된 이메일인지 확인
+    const user = await this.userRepository.findOne({
+      select: ['id', 'email', 'password'],
+      where: { email },
+    });
+
+    // 입력한 비밀번호가 맞는 비밀번호인지 확인
+    const isPasswordMatched = await compare(password, user.password);
+
+    if (user && isPasswordMatched) return user;
+    return null;
+  }
 }

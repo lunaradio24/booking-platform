@@ -18,7 +18,11 @@ export class AuthController {
 
   @Post('sign-in')
   async signIn(@Body() signInDto: SignInDto) {
-    return await this.authService.signIn(signInDto);
+    const tokens = await this.authService.signIn(signInDto);
+    return {
+      message: '로그인에 성공했습니다.',
+      data: tokens,
+    };
   }
 
   @Post('sign-out')
