@@ -12,10 +12,12 @@ import { UserService } from 'src/user/user.service';
 import { TransactionLogService } from 'src/transaction-log/transaction-log.service';
 import { TransactionLogModule } from 'src/transaction-log/transaction-log.module';
 import { TransactionLog } from 'src/transaction-log/entities/transaction-log.entity';
+import { LocalStrategy } from './local.strategy';
+import { RefreshToken } from 'src/refresh-token/entities/refresh-token.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, TransactionLog]),
+    TypeOrmModule.forFeature([User, TransactionLog, RefreshToken]),
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     JwtModule.registerAsync({
       useFactory: (config: ConfigService) => ({
@@ -28,7 +30,7 @@ import { TransactionLog } from 'src/transaction-log/entities/transaction-log.ent
     TransactionLogModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService, TransactionLogService, JwtStrategy],
+  providers: [AuthService, UserService, TransactionLogService, JwtStrategy, LocalStrategy],
   exports: [],
 })
 export class AuthModule {}

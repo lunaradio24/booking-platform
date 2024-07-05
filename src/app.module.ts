@@ -30,7 +30,7 @@ const typeOrmModuleOptions = {
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
+      isGlobal: true, // ConfigModule을 전역 모듈로 설정
       validationSchema: Joi.object({
         JWT_PASSPORT_KEY: Joi.string().required(),
         DB_USERNAME: Joi.string().required(),
