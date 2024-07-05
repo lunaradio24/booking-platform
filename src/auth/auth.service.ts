@@ -1,7 +1,7 @@
+import _ from 'lodash';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
-import _ from 'lodash';
 import { SignInDto } from 'src/user/dto/sign-in.dto';
 import { SignUpDto } from 'src/user/dto/sign-up.dto';
 import { User } from 'src/user/entities/user.entity';
@@ -52,4 +52,6 @@ export class AuthService {
   }
 
   async signOut() {}
+
+  async renewTokens() {}
 }

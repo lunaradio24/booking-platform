@@ -21,4 +21,9 @@ export class AuthController {
   async signOut() {
     await this.authService.signOut();
   }
+
+  @Post('renew-tokens')
+  async renewTokens() {
+    await this.authService.renewTokens();
+  }
 }
