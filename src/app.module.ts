@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
@@ -8,23 +8,22 @@ import { UserModule } from './user/user.module';
 import { ShowModule } from './show/show.module';
 import { BookingModule } from './booking/booking.module';
 import { SeatModule } from './seat/seat.module';
-import { RefreshTokenModule } from './refresh-token/refresh-token.module';
 import { TransactionLogModule } from './transaction-log/transaction-log.module';
+import { ENV } from './common/constants/env.constant';
 
 const typeOrmModuleOptions = {
-  useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
+  useFactory: async (): Promise<TypeOrmModuleOptions> => ({
     namingStrategy: new SnakeNamingStrategy(),
     type: 'mysql',
-    host: configService.get<string>('DB_HOST'),
-    port: configService.get<number>('DB_PORT'),
-    username: configService.get<string>('DB_USERNAME'),
-    password: configService.get<string>('DB_PASSWORD'),
-    database: configService.get<string>('DB_NAME'),
+    host: ENV.DB_HOST,
+    port: ENV.DB_PORT,
+    username: ENV.DB_USERNAME,
+    password: ENV.DB_PASSWORD,
+    database: ENV.DB_NAME,
     entities: [__dirname + '/**/*.entity{.ts,.js}'],
-    synchronize: configService.get<boolean>('DB_SYNC'),
+    synchronize: ENV.DB_SYNC,
     logging: true,
   }),
-  inject: [ConfigService],
 };
 
 @Module({
@@ -47,7 +46,6 @@ const typeOrmModuleOptions = {
     ShowModule,
     BookingModule,
     SeatModule,
-    RefreshTokenModule,
     TransactionLogModule,
   ],
   controllers: [],

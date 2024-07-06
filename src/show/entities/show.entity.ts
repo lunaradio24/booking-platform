@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Up
 import { Category } from '../types/category.type';
 import { Booking } from 'src/booking/entities/booking.entity';
 import { ShowDate } from 'src/show-date/entities/show-date.entity';
+import { TicketPrices } from '../types/ticket-prices.type';
 
 @Entity({ name: 'shows' })
 export class Show {
@@ -20,17 +21,17 @@ export class Show {
   @Column({ type: 'varchar' })
   location: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   image: string;
 
-  @Column()
-  schedule: string;
+  @Column({ type: 'json' })
+  schedule: string[];
 
-  @Column()
+  @Column({ type: 'int' })
   runtime: number;
 
-  @Column()
-  ticketPrices: string;
+  @Column({ type: 'json' })
+  ticketPrices: TicketPrices;
 
   @CreateDateColumn()
   createdAt: Date;
