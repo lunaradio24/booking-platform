@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ShowService } from './show.service';
 import { ShowController } from './show.controller';
-import { Show } from './entities/show.entity';
-import { ShowDate } from 'src/show-date/entities/show-date.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Show } from './entities/show.entity';
+import { ShowDate } from './entities/show-date.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Show, ShowDate])],

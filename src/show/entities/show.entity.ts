@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Category } from '../types/category.type';
 import { Booking } from 'src/booking/entities/booking.entity';
-import { ShowDate } from 'src/show-date/entities/show-date.entity';
+import { ShowDate } from './show-date.entity';
 import { TicketPrices } from '../types/ticket-prices.type';
 
 @Entity({ name: 'shows' })
