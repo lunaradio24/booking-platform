@@ -1,8 +1,5 @@
-import { compare, hash } from 'bcrypt';
-import _, { create } from 'lodash';
 import { Repository } from 'typeorm';
-
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 

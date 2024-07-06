@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
@@ -76,8 +76,13 @@ export class AuthService {
   }
 
   async signOut(userId: number) {
+    // DB에서 Refresh Token이 null인지 확인
+    const { token: existingToken } = await this.tokenRepository.findOneBy({ userId });
+    if (!existingToken) {
+      throw new UnauthorizedException('이미 로그아웃 되었습니다.');
+    }
     // DB에서 Refresh Token 삭제(soft delete)
-    await this.tokenRepository.delete({ userId });
+    await this.tokenRepository.update({ userId }, { token: null });
   }
 
   async validateUser(signInDto: SignInDto) {
@@ -102,6 +107,8 @@ export class AuthService {
   }
 
   async issueTokens(payload: JwtPayload) {
+    const userId = payload.userId;
+
     // Access Token, Refresh Token 생성
     const accessToken = sign(payload, this.configService.get('ACCESS_TOKEN_SECRET_KEY'));
     const refreshToken = sign(payload, this.configService.get('REFRESH_TOKEN_SECRET_KEY'));
@@ -109,10 +116,21 @@ export class AuthService {
     // Refresh Token Hashing 후 DB에 저장
     const hashRounds = Number(this.configService.get('HASH_ROUNDS'));
     const hashedRefreshToken = await hash(refreshToken, hashRounds);
-    await this.tokenRepository.save({
-      userId: payload.userId,
-      token: hashedRefreshToken,
-    });
+
+    // DB에 해당 유저의 Refresh Token 데이터가 있는지 확인
+    const existingToken = await this.tokenRepository.findOne({ where: { userId } });
+
+    // 없으면 데이터 삽입
+    if (!existingToken) {
+      await this.tokenRepository.insert({
+        userId,
+        token: hashedRefreshToken,
+      });
+    }
+    // 있으면 갱신
+    else {
+      await this.tokenRepository.update({ userId }, { token: hashedRefreshToken });
+    }
 
     // Access Token, Refresh Token 반환
     return { accessToken, refreshToken };
