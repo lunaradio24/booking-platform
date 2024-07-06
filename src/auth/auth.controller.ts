@@ -19,8 +19,9 @@ export class AuthController {
 
   @Post('sign-in')
   @UseGuards(LocalAuthGuard)
-  async signIn(@Request() req) {
-    const tokens = await this.authService.issueTokens(req.user.id);
+  async signIn(@Request() req: any) {
+    const payload = { userId: req.user.id, email: req.user.email };
+    const tokens = await this.authService.issueTokens(payload);
     return {
       message: '로그인에 성공했습니다.',
       data: tokens,
@@ -29,7 +30,7 @@ export class AuthController {
 
   @Post('sign-out')
   @UseGuards(RefreshTokenGuard)
-  async signOut(@Request() req) {
+  async signOut(@Request() req: any) {
     await this.authService.signOut(req.user.id);
     return {
       message: '로그아웃에 성공했습니다.',
@@ -38,7 +39,7 @@ export class AuthController {
 
   @Post('renew-tokens')
   @UseGuards(RefreshTokenGuard)
-  async renewTokens(@Request() req) {
+  async renewTokens(@Request() req: any) {
     const payload = { userId: req.user.id, email: req.user.email };
     const tokens = await this.authService.issueTokens(payload);
     return {

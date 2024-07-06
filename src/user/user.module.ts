@@ -5,12 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { ENV } from 'src/common/constants/env.constant';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     JwtModule.registerAsync({
-      useFactory: () => ({ secret: ENV.ACCESS_TOKEN_SECRET_KEY }),
+      useFactory: (configService: ConfigService) => ({ secret: configService.get('ACCESS_TOKEN_SECRET_KEY') }),
+      inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([User]),
   ],

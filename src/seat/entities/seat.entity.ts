@@ -1,5 +1,5 @@
 import { Grade } from 'src/booking/types/grade.type';
-import { ShowDate } from 'src/show-date/entities/show-date.entity';
+import { ShowDate } from 'src/show/entities/show-date.entity';
 import {
   Column,
   CreateDateColumn,
