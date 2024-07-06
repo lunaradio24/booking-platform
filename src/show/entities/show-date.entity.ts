@@ -26,7 +26,7 @@ export class ShowDate {
   time: string;
 
   @Column({ name: 'left_seats', type: 'int' })
-  leftSeats: number[];
+  VIPSeats: number;
 
   @CreateDateColumn()
   createdAt: Date;

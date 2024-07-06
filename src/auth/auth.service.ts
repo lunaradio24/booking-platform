@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
@@ -9,11 +9,12 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { UserService } from 'src/user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TransactionType } from 'src/transaction-log/types/transaction-type.type';
-import { ConfigService } from '@nestjs/config';
 import { WELCOME_POINTS } from './constants/sign-up.constant';
 import { TransactionLogService } from 'src/transaction-log/transaction-log.service';
 import { sign } from 'jsonwebtoken';
-import { RefreshToken } from 'src/refresh-token/entities/refresh-token.entity';
+import { RefreshToken } from './entities/refresh-token.entity';
+import { ENV } from 'src/common/constants/env.constant';
+import { JwtPayload } from './constants/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +25,6 @@ export class AuthService {
     private readonly tokenRepository: Repository<RefreshToken>,
     private readonly userService: UserService,
     private readonly transactionService: TransactionLogService,
-    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private dataSource: DataSource,
   ) {}
@@ -39,8 +39,7 @@ export class AuthService {
     }
 
     // 비밀번호 해싱
-    const hashRounds = Number(this.configService.get('HASH_ROUNDS'));
-    const hashedPassword = await hash(password, hashRounds);
+    const hashedPassword = await hash(password, ENV.HASH_ROUNDS);
 
     // 트랜잭션
     let newUser: User;
@@ -56,7 +55,7 @@ export class AuthService {
 
       // 거래 기록
       await this.transactionService.create({
-        senderId: this.configService.get('ADMIN_ID'),
+        senderId: ENV.ADMIN_ID,
         receiverId: newUser.id,
         type: TransactionType.CHARGE,
         amount: WELCOME_POINTS,
@@ -75,46 +74,11 @@ export class AuthService {
     return newUserWithoutPassword;
   }
 
-  async signIn(signInDto: SignInDto) {
-    const { email, password } = signInDto;
-
-    // 등록된 이메일인지 확인
-    const user = await this.userRepository.findOne({
-      select: ['id', 'email', 'password'],
-      where: { email },
-    });
-
-    if (_.isNil(user)) {
-      throw new UnauthorizedException('이메일을 확인해주세요.');
-    }
-
-    // 입력한 비밀번호가 맞는 비밀번호인지 확인
-    if (!(await compare(password, user.password))) {
-      throw new UnauthorizedException('비밀번호를 확인해주세요.');
-    }
-
-    // Access Token, Refresh Token 발급
-    const payload = { userId: user.id, email };
-    const accessToken = sign(payload, this.configService.get('ACCESS_TOKEN_SECRET_KEY'));
-    const refreshToken = sign(payload, this.configService.get('REFRESH_TOKEN_SECRET_KEY'));
-
-    // Refresh Token Hashing 후 DB에 저장
-    const hashRounds = Number(this.configService.get('HASH_ROUNDS'));
-    const hashedRefreshToken = await hash(refreshToken, hashRounds);
-    await this.tokenRepository.save({
-      userId: user.id,
-      token: hashedRefreshToken,
-    });
-
-    // 반환 정보
-    return { accessToken, refreshToken };
+  async signOut(userId: number) {
+    // DB에서 Refresh Token 삭제(soft delete)
+    await this.tokenRepository.delete({ userId });
   }
 
-  async signOut() {}
-
-  async renewTokens() {}
-
-  // 등록된 유저인지 검증
   async validateUser(signInDto: SignInDto) {
     const { email, password } = signInDto;
 
@@ -124,10 +88,31 @@ export class AuthService {
       where: { email },
     });
 
+    if (_.isNil(user)) return null;
+
     // 입력한 비밀번호가 맞는 비밀번호인지 확인
     const isPasswordMatched = await compare(password, user.password);
 
-    if (user && isPasswordMatched) return user;
+    if (isPasswordMatched) {
+      const { password: _, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    }
     return null;
+  }
+
+  async issueTokens(payload: JwtPayload) {
+    // Access Token, Refresh Token 생성
+    const accessToken = sign(payload, ENV.ACCESS_TOKEN_SECRET_KEY);
+    const refreshToken = sign(payload, ENV.REFRESH_TOKEN_SECRET_KEY);
+
+    // Refresh Token Hashing 후 DB에 저장
+    const hashedRefreshToken = await hash(refreshToken, ENV.HASH_ROUNDS);
+    await this.tokenRepository.save({
+      userId: payload.userId,
+      token: hashedRefreshToken,
+    });
+
+    // Access Token, Refresh Token 반환
+    return { accessToken, refreshToken };
   }
 }

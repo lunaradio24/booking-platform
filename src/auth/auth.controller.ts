@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { SignInDto } from './dto/sign-in.dto';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +18,9 @@ export class AuthController {
   }
 
   @Post('sign-in')
-  async signIn(@Body() signInDto: SignInDto) {
-    const tokens = await this.authService.signIn(signInDto);
+  @UseGuards(LocalAuthGuard)
+  async signIn(@Request() req) {
+    const tokens = await this.authService.issueTokens(req.user.id);
     return {
       message: '로그인에 성공했습니다.',
       data: tokens,
@@ -26,12 +28,22 @@ export class AuthController {
   }
 
   @Post('sign-out')
-  async signOut() {
-    await this.authService.signOut();
+  @UseGuards(RefreshTokenGuard)
+  async signOut(@Request() req) {
+    await this.authService.signOut(req.user.id);
+    return {
+      message: '로그아웃에 성공했습니다.',
+    };
   }
 
   @Post('renew-tokens')
-  async renewTokens() {
-    await this.authService.renewTokens();
+  @UseGuards(RefreshTokenGuard)
+  async renewTokens(@Request() req) {
+    const payload = { userId: req.user.id, email: req.user.email };
+    const tokens = await this.authService.issueTokens(payload);
+    return {
+      message: '토큰 재발급에 성공했습니다.',
+      data: tokens,
+    };
   }
 }
