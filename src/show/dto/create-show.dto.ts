@@ -2,7 +2,7 @@ import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsObject, IsPositive, IsString, 
 import { Show } from '../entities/show.entity';
 import { OmitType } from '@nestjs/mapped-types';
 import { SeatsByGrades } from '../types/ticket-prices.type';
-import { Category } from '../types/category.type';
+import { ShowCategory } from '../types/category.type';
 import { Type } from 'class-transformer';
 
 export class CreateShowDto extends OmitType(Show, ['id', 'createdAt', 'updatedAt']) {
@@ -14,9 +14,9 @@ export class CreateShowDto extends OmitType(Show, ['id', 'createdAt', 'updatedAt
   @IsNotEmpty({ message: '공연 설명을 입력해주세요.' })
   readonly description: string;
 
-  @IsEnum(Category)
+  @IsEnum(ShowCategory)
   @IsNotEmpty({ message: '공연 분류를 입력해주세요' })
-  readonly category: Category;
+  readonly category: ShowCategory;
 
   @IsString()
   @IsNotEmpty({ message: '공연 장소를 입력해주세요' })

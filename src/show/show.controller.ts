@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { ShowService } from './show.service';
 import { CreateShowDto } from './dto/create-show.dto';
 import { UpdateShowDto } from './dto/update-show.dto';
 import { RoleGuard } from 'src/auth/guards/role.guard';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
+import { ShowCategory } from './types/category.type';
 
 @Controller('shows')
 export class ShowController {
@@ -22,8 +23,8 @@ export class ShowController {
   }
 
   @Get()
-  async findAll() {
-    return this.showService.findAll();
+  async findAll(@Query('category') category: ShowCategory | undefined, @Query('search') search: string | undefined) {
+    return this.showService.findAll(category, search);
   }
 
   @Get(':showId')

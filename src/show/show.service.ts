@@ -1,14 +1,14 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateShowDto } from './dto/create-show.dto';
 import { UpdateShowDto } from './dto/update-show.dto';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { Show } from './entities/show.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShowDate } from './entities/show-date.entity';
 import { calculateEndTime } from 'src/utils/functions/calculate-endtime.function';
 import { dateTimeTransformer } from 'src/utils/functions/datetime-transform.function';
 import { Seat } from 'src/seat/entities/seat.entity';
-import { SeatsByGrades } from './types/ticket-prices.type';
+import { ShowCategory } from './types/category.type';
 
 @Injectable()
 export class ShowService {
@@ -110,8 +110,12 @@ export class ShowService {
     return createdShow;
   }
 
-  async findAll() {
-    return `This action returns all show`;
+  async findAll(category: ShowCategory | undefined, search: string | undefined) {
+    console.log(category, search);
+    return await this.showRepository.find({
+      where: { category, title: search ? Like(`%${search}%`) : undefined },
+      select: ['id', 'title', 'category', 'location', 'schedules'],
+    });
   }
 
   async findOne(id: number) {
