@@ -9,6 +9,8 @@ export class UserController {
   @Get('me')
   @UseGuards(AccessTokenGuard)
   getMyProfile(@Request() req) {
-    return req.user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...userWithoutPassword } = req.user;
+    return userWithoutPassword;
   }
 }
