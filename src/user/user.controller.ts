@@ -2,13 +2,13 @@ import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 import { UserService } from './user.service';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('profile')
+  @Get('me')
   @UseGuards(AccessTokenGuard)
-  getEmail(@Request() req) {
+  getMyProfile(@Request() req) {
     return req.user;
   }
 }

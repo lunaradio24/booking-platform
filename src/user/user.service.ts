@@ -1,9 +1,5 @@
-import { compare, hash } from 'bcrypt';
-import _, { create } from 'lodash';
 import { Repository } from 'typeorm';
-
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './entities/user.entity';
@@ -13,7 +9,6 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private readonly jwtService: JwtService,
   ) {}
 
   async findByEmail(email: string) {
