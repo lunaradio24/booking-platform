@@ -20,8 +20,8 @@ export class AuthController {
   @Post('sign-in')
   @UseGuards(LocalAuthGuard)
   async signIn(@Request() req: any) {
-    const payload = { userId: req.user.id, email: req.user.email };
-    const tokens = await this.authService.issueTokens(payload);
+    const { id: userId, email } = req.user;
+    const tokens = await this.authService.signIn(userId, email);
     return {
       message: '로그인에 성공했습니다.',
       data: tokens,
@@ -40,8 +40,7 @@ export class AuthController {
   @Post('renew-tokens')
   @UseGuards(RefreshTokenGuard)
   async renewTokens(@Request() req: any) {
-    const payload = { userId: req.user.id, email: req.user.email };
-    const tokens = await this.authService.issueTokens(payload);
+    const tokens = await this.authService.renewTokens(req.user.id, req.user.email);
     return {
       message: '토큰 재발급에 성공했습니다.',
       data: tokens,

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
@@ -75,14 +75,45 @@ export class AuthService {
     return newUserWithoutPassword;
   }
 
+  async signIn(userId: number, email: string) {
+    const payload = { id: userId, email };
+    // 로그인 여부 확인
+    const loginRecord = await this.tokenRepository.findOneBy({ userId });
+    if (loginRecord && loginRecord.token) {
+      throw new BadRequestException('이미 로그인 하셨습니다.');
+    }
+
+    // 토큰 발급
+    const tokens = await this.issueTokens(payload);
+    return tokens;
+  }
+
   async signOut(userId: number) {
-    // DB에서 Refresh Token이 null인지 확인
-    const { token: existingToken } = await this.tokenRepository.findOneBy({ userId });
-    if (!existingToken) {
-      throw new UnauthorizedException('이미 로그아웃 되었습니다.');
+    // 로그인 여부 확인
+    const loginRecord = await this.tokenRepository.findOneBy({ userId });
+    if (!loginRecord) {
+      throw new NotFoundException('로그인한 기록이 없습니다.');
+    }
+    if (!loginRecord.token) {
+      throw new BadRequestException('이미 로그아웃 되었습니다.');
     }
     // DB에서 Refresh Token 삭제(soft delete)
     await this.tokenRepository.update({ userId }, { token: null });
+  }
+
+  async renewTokens(userId: number, email: string) {
+    // 로그인 여부 확인
+    const loginRecord = await this.tokenRepository.findOneBy({ userId });
+    if (!loginRecord) {
+      throw new NotFoundException('로그인한 기록이 없습니다.');
+    }
+    if (!loginRecord.token) {
+      throw new BadRequestException('로그인 상태가 아닙니다.');
+    }
+    // 토큰 재발급
+    const payload = { id: userId, email };
+    const tokens = await this.issueTokens(payload);
+    return tokens;
   }
 
   async validateUser(signInDto: SignInDto) {
@@ -100,6 +131,7 @@ export class AuthService {
     const isPasswordMatched = await compare(password, user.password);
 
     if (isPasswordMatched) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password: _, ...userWithoutPassword } = user;
       return userWithoutPassword;
     }
@@ -107,7 +139,7 @@ export class AuthService {
   }
 
   async issueTokens(payload: JwtPayload) {
-    const userId = payload.userId;
+    const userId = payload.id;
 
     // Access Token, Refresh Token 생성
     const accessToken = sign(payload, this.configService.get('ACCESS_TOKEN_SECRET_KEY'));
@@ -118,10 +150,10 @@ export class AuthService {
     const hashedRefreshToken = await hash(refreshToken, hashRounds);
 
     // DB에 해당 유저의 Refresh Token 데이터가 있는지 확인
-    const existingToken = await this.tokenRepository.findOne({ where: { userId } });
+    const loginRecord = await this.tokenRepository.findOne({ where: { userId } });
 
     // 없으면 데이터 삽입
-    if (!existingToken) {
+    if (!loginRecord) {
       await this.tokenRepository.insert({
         userId,
         token: hashedRefreshToken,
