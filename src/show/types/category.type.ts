@@ -1,4 +1,4 @@
-export enum Category {
+export enum ShowCategory {
   CONCERT = 'CONCERT',
   MUSICAL = 'MUSICAL',
   PLAY = 'PLAY',
