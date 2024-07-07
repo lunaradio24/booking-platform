@@ -43,11 +43,11 @@ export class Booking {
 
   // name: Specifies the name of the foreign key column in the database.
   // referencedColumnName: Specifies the name of the column in the referenced (target) entity that the foreign key refers to.
-  @ManyToOne(() => User, (user) => user.booking)
+  @ManyToOne(() => User, (user) => user.booking, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
 
-  @ManyToOne(() => Show, (show) => show.booking)
+  @ManyToOne(() => Show, (show) => show.booking, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'show_id', referencedColumnName: 'id' })
   show: Show;
 }

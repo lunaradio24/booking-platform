@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Up
 import { Category } from '../types/category.type';
 import { Booking } from 'src/booking/entities/booking.entity';
 import { ShowDate } from './show-date.entity';
-import { TicketPrices } from '../types/ticket-prices.type';
+import { SeatsByGrades } from '../types/ticket-prices.type';
 
 @Entity({ name: 'shows' })
 export class Show {
@@ -25,13 +25,16 @@ export class Show {
   image: string;
 
   @Column({ type: 'json' })
-  schedule: string[];
+  schedules: string[];
 
   @Column({ type: 'int' })
   runtime: number;
 
-  @Column({ type: 'json' })
-  ticketPrices: TicketPrices;
+  @Column({ name: 'num_seats', type: 'json' })
+  numSeats: Partial<SeatsByGrades>;
+
+  @Column({ name: 'ticket_prices', type: 'json' })
+  ticketPrices: Partial<SeatsByGrades>;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -39,9 +42,9 @@ export class Show {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => ShowDate, (showDate) => showDate.show)
+  @OneToMany(() => ShowDate, (showDate) => showDate.show, { cascade: true })
   showDate: ShowDate[];
 
-  @OneToMany(() => Booking, (booking) => booking.show)
+  @OneToMany(() => Booking, (booking) => booking.show, { cascade: true })
   booking: Booking[];
 }

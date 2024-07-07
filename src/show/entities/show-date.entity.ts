@@ -10,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { SeatsByGrades } from '../types/ticket-prices.type';
 
 @Entity({ name: 'show_dates' })
 export class ShowDate {
@@ -25,8 +26,11 @@ export class ShowDate {
   @Column({ type: 'varchar' })
   time: string;
 
-  @Column({ name: 'left_seats', type: 'int' })
-  VIPSeats: number;
+  @Column({ name: 'cancelable_date', type: 'varchar' })
+  cancelableDate: string;
+
+  @Column({ name: 'remain_seats', type: 'json' })
+  remainSeats: Partial<SeatsByGrades>;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -34,7 +38,7 @@ export class ShowDate {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Show, (show) => show.showDate)
+  @ManyToOne(() => Show, (show) => show.showDate, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'show_id', referencedColumnName: 'id' })
   show: Show;
 

@@ -1,7 +1,7 @@
 import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsObject, IsPositive, IsString, ValidateNested } from 'class-validator';
 import { Show } from '../entities/show.entity';
 import { OmitType } from '@nestjs/mapped-types';
-import { TicketPrices } from '../types/ticket-prices.type';
+import { SeatsByGrades } from '../types/ticket-prices.type';
 import { Category } from '../types/category.type';
 import { Type } from 'class-transformer';
 
@@ -27,9 +27,8 @@ export class CreateShowDto extends OmitType(Show, ['id', 'createdAt', 'updatedAt
   readonly image: string;
 
   @IsArray()
-  @IsString({ each: true, message: '각 공연 날짜는 문자열이어야 합니다.' })
-  @IsNotEmpty({ message: '공연 날짜를 입력해주세요.' })
-  readonly schedule: string[];
+  @IsNotEmpty({ message: '공연 날짜와 시간을 입력해주세요.' })
+  readonly schedules: string[];
 
   @IsNumber()
   @IsPositive({ message: '공연 시간은 양수이어야 합니다.' })
@@ -38,7 +37,13 @@ export class CreateShowDto extends OmitType(Show, ['id', 'createdAt', 'updatedAt
 
   @IsObject()
   @ValidateNested()
-  @Type(() => TicketPrices)
+  @Type(() => SeatsByGrades)
+  @IsNotEmpty({ message: '좌석 수를 입력해주세요.' })
+  readonly numSeats: Partial<SeatsByGrades>;
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => SeatsByGrades)
   @IsNotEmpty({ message: '티켓 가격을 입력해주세요.' })
-  readonly ticketPrices: TicketPrices;
+  readonly ticketPrices: Partial<SeatsByGrades>;
 }
