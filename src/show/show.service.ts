@@ -118,16 +118,20 @@ export class ShowService {
   }
 
   async findOne(id: number) {
-    return await this.showRepository.findOne({
+    const show = await this.showRepository.findOne({
       where: { id },
+      relations: ['showDate'],
     });
 
-    // const { date: currentDate, time: currentTime } = dateTimeTransformer(new Date().toISOString());
+    const { showDate: showDates, ...showInfo } = show;
+    // 현재 시간을 기준으로 예약 가능 여부 추가
+    const { date: currentDate, time: currentTime } = dateTimeTransformer(new Date().toISOString());
+    const showDatesWithBookability = showDates.map((showDate) => {
+      const isBookable = currentDate < showDate.date || (currentDate === showDate.date && currentTime < showDate.time);
+      return { ...showDate, isBookable };
+    });
 
-    // const isBookables = show.schedules.map((schedule) => {
-    //   const { date: showDate, time: showTime } = dateTimeTransformer(schedule);
-    //   return currentDate < showDate || (currentDate === showDate && currentTime < showTime);
-    // });
+    return { showInfo, showDatesWithBookability };
   }
 
   async update(id: number, updateShowDto: UpdateShowDto) {
