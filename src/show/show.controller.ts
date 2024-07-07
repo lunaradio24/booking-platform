@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, ParseIntPipe } from '@nestjs/common';
 import { ShowService } from './show.service';
 import { CreateShowDto } from './dto/create-show.dto';
 import { UpdateShowDto } from './dto/update-show.dto';
@@ -28,29 +28,29 @@ export class ShowController {
   }
 
   @Get(':showId')
-  async findOne(@Param('showId') showId: string) {
-    return this.showService.findOne(Number(showId));
+  async findOne(@Param('showId', ParseIntPipe) showId: number) {
+    return this.showService.findOne(showId);
   }
 
   @Patch(':showId')
   @UseGuards(AccessTokenGuard, RoleGuard)
   @Roles(['ADMIN', 'MANAGER'])
-  async update(@Param('showId') showId: string, @Body() updateShowDto: UpdateShowDto) {
-    await this.showService.update(Number(showId), updateShowDto);
+  async update(@Param('showId', ParseIntPipe) showId: number, @Body() updateShowDto: UpdateShowDto) {
+    await this.showService.update(showId, updateShowDto);
     return {
       message: '공연 정보를 수정했습니다.',
-      data: { showId: Number(showId) },
+      data: { showId },
     };
   }
 
   @Delete(':showId')
   @UseGuards(AccessTokenGuard, RoleGuard)
   @Roles(['ADMIN', 'MANAGER'])
-  async remove(@Param('showId') showId: string) {
-    await this.showService.remove(Number(showId));
+  async remove(@Param('showId', ParseIntPipe) showId: number) {
+    await this.showService.remove(showId);
     return {
       message: '공연 정보를 삭제했습니다.',
-      data: { showId: Number(showId) },
+      data: { showId },
     };
   }
 }

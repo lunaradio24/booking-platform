@@ -9,6 +9,7 @@ import { calculateEndTime } from 'src/utils/functions/calculate-endtime.function
 import { dateTimeTransformer } from 'src/utils/functions/datetime-transform.function';
 import { Seat } from 'src/seat/entities/seat.entity';
 import { ShowCategory } from './types/category.type';
+import { scheduled } from 'rxjs';
 
 @Injectable()
 export class ShowService {
@@ -79,7 +80,6 @@ export class ShowService {
 
       // (2) showDate 테이블에 저장
       const createdShowDates = await this.showDateRepository.save(showDateEntities);
-      console.log(createdShowDates);
 
       // (3) showDate 날짜별로 seats 테이블에 저장
       for (const showDate of createdShowDates) {
@@ -111,7 +111,6 @@ export class ShowService {
   }
 
   async findAll(category: ShowCategory | undefined, search: string | undefined) {
-    console.log(category, search);
     return await this.showRepository.find({
       where: { category, title: search ? Like(`%${search}%`) : undefined },
       select: ['id', 'title', 'category', 'location', 'schedules'],
@@ -119,7 +118,16 @@ export class ShowService {
   }
 
   async findOne(id: number) {
-    return `This action returns a #${id} show`;
+    return await this.showRepository.findOne({
+      where: { id },
+    });
+
+    // const { date: currentDate, time: currentTime } = dateTimeTransformer(new Date().toISOString());
+
+    // const isBookables = show.schedules.map((schedule) => {
+    //   const { date: showDate, time: showTime } = dateTimeTransformer(schedule);
+    //   return currentDate < showDate || (currentDate === showDate && currentTime < showTime);
+    // });
   }
 
   async update(id: number, updateShowDto: UpdateShowDto) {
