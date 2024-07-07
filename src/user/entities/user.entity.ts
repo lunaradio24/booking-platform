@@ -48,7 +48,7 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Booking, (booking) => booking.user)
+  @OneToMany(() => Booking, (booking) => booking.user, { cascade: true })
   booking: Booking[];
 
   @OneToMany(() => TransactionLog, (withdrawal) => withdrawal.sender)

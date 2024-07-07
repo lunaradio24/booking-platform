@@ -27,7 +27,7 @@ export class Seat {
   @Column({ type: 'int' })
   price: number;
 
-  @Column({ name: 'is_booked', type: 'boolean' })
+  @Column({ name: 'is_booked', type: 'boolean', default: false })
   isBooked: boolean;
 
   @CreateDateColumn()

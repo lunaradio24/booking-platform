@@ -1,4 +1,4 @@
-export class TicketPrices {
+export class SeatsByGrades {
   VIP: number = 0;
   R: number = 0;
   S: number = 0;
