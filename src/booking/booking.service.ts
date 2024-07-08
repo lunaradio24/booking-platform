@@ -164,6 +164,12 @@ export class BookingService {
       const amountOfPayment = booking.price;
       const grade = booking.grade;
 
+      // 포인트가 부족한지 확인
+      const user = await this.userRepository.findOneBy({ id: userId });
+      if (user.points < amountOfPayment) {
+        throw new BadRequestException('포인트가 부족합니다.');
+      }
+
       // 트랜잭션
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
