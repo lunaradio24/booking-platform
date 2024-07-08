@@ -1,3 +1,4 @@
+import { Booking } from 'src/booking/entities/booking.entity';
 import { Grade } from 'src/booking/types/grade.type';
 import { ShowDate } from 'src/show/entities/show-date.entity';
 import {
@@ -6,6 +7,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -39,4 +41,7 @@ export class Seat {
   @ManyToOne(() => ShowDate, (showDate) => showDate.seat)
   @JoinColumn({ name: 'show_date_id', referencedColumnName: 'id' })
   showDate: ShowDate;
+
+  @OneToMany(() => Booking, (booking) => booking.seat)
+  booking: Booking[];
 }

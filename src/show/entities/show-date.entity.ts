@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { SeatsByGrades } from '../types/ticket-prices.type';
+import { Booking } from 'src/booking/entities/booking.entity';
 
 @Entity({ name: 'show_dates' })
 export class ShowDate {
@@ -42,6 +43,9 @@ export class ShowDate {
   @JoinColumn({ name: 'show_id', referencedColumnName: 'id' })
   show: Show;
 
+  @OneToMany(() => Booking, (booking) => booking.showDate)
+  booking: Booking[];
+
   @OneToMany(() => Seat, (seat) => seat.showDate)
-  seat: Seat;
+  seat: Seat[];
 }

@@ -23,7 +23,7 @@ export class AuthService {
     @InjectRepository(RefreshToken)
     private readonly tokenRepository: Repository<RefreshToken>,
     private readonly userService: UserService,
-    private readonly transactionService: TransactionLogService,
+    private readonly transactionLogService: TransactionLogService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private dataSource: DataSource,
@@ -55,7 +55,7 @@ export class AuthService {
       });
 
       // 거래 기록
-      await this.transactionService.create({
+      await this.transactionLogService.create({
         senderId: Number(this.configService.get('ADMIN_ID')),
         receiverId: newUser.id,
         type: TransactionType.CHARGE,

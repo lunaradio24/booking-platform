@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Query, ParseIntPipe } from '@nestjs/common';
 import { ShowService } from './show.service';
 import { CreateShowDto } from './dto/create-show.dto';
-import { UpdateShowDto } from './dto/update-show.dto';
+// import { UpdateShowDto } from './dto/update-show.dto';
 import { RoleGuard } from 'src/auth/guards/role.guard';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
@@ -32,25 +32,25 @@ export class ShowController {
     return this.showService.findOne(showId);
   }
 
-  @Patch(':showId')
-  @UseGuards(AccessTokenGuard, RoleGuard)
-  @Roles(['ADMIN', 'MANAGER'])
-  async update(@Param('showId', ParseIntPipe) showId: number, @Body() updateShowDto: UpdateShowDto) {
-    await this.showService.update(showId, updateShowDto);
-    return {
-      message: '공연 정보를 수정했습니다.',
-      data: { showId },
-    };
-  }
+  // @Patch(':showId')
+  // @UseGuards(AccessTokenGuard, RoleGuard)
+  // @Roles(['ADMIN', 'MANAGER'])
+  // async update(@Param('showId', ParseIntPipe) showId: number, @Body() updateShowDto: UpdateShowDto) {
+  //   await this.showService.update(showId, updateShowDto);
+  //   return {
+  //     message: '공연 정보를 수정했습니다.',
+  //     data: { showId },
+  //   };
+  // }
 
-  @Delete(':showId')
-  @UseGuards(AccessTokenGuard, RoleGuard)
-  @Roles(['ADMIN', 'MANAGER'])
-  async remove(@Param('showId', ParseIntPipe) showId: number) {
-    await this.showService.remove(showId);
-    return {
-      message: '공연 정보를 삭제했습니다.',
-      data: { showId },
-    };
-  }
+  // @Delete(':showId')
+  // @UseGuards(AccessTokenGuard, RoleGuard)
+  // @Roles(['ADMIN', 'MANAGER'])
+  // async remove(@Param('showId', ParseIntPipe) showId: number) {
+  //   await this.showService.remove(showId);
+  //   return {
+  //     message: '공연 정보를 삭제했습니다.',
+  //     data: { showId },
+  //   };
+  // }
 }
