@@ -16,6 +16,6 @@ export class TransactionLogService {
   }
 
   async findAll() {
-    return `This action returns all transactionLog`;
+    return await this.transactionLogRepository.find({ order: { createdAt: 'DESC' } });
   }
 }
