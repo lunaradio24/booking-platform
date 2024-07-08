@@ -1,6 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { ShowCategory } from '../types/category.type';
-import { Booking } from 'src/booking/entities/booking.entity';
 import { ShowDate } from './show-date.entity';
 import { SeatsByGrades } from '../types/ticket-prices.type';
 
@@ -44,7 +43,4 @@ export class Show {
 
   @OneToMany(() => ShowDate, (showDate) => showDate.show, { cascade: true })
   showDate: ShowDate[];
-
-  @OneToMany(() => Booking, (booking) => booking.show, { cascade: true })
-  booking: Booking[];
 }

@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateShowDto } from './dto/create-show.dto';
-import { UpdateShowDto } from './dto/update-show.dto';
+// import { UpdateShowDto } from './dto/update-show.dto';
 import { DataSource, Like, Repository } from 'typeorm';
 import { Show } from './entities/show.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,7 +9,6 @@ import { calculateEndTime } from 'src/utils/functions/calculate-endtime.function
 import { dateTimeTransformer } from 'src/utils/functions/datetime-transform.function';
 import { Seat } from 'src/seat/entities/seat.entity';
 import { ShowCategory } from './types/category.type';
-import { scheduled } from 'rxjs';
 
 @Injectable()
 export class ShowService {
@@ -134,11 +133,11 @@ export class ShowService {
     return { showInfo, showDatesWithBookability };
   }
 
-  async update(id: number, updateShowDto: UpdateShowDto) {
-    return `This action updates a #${id} show`;
-  }
+  // async update(id: number, updateShowDto: UpdateShowDto) {
+  //   return;
+  // }
 
-  async remove(id: number) {
-    return `This action removes a #${id} show`;
-  }
+  // async remove(id: number) {
+  //   return `This action removes a #${id} show`;
+  // }
 }

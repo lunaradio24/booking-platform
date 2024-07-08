@@ -1,4 +1,14 @@
-import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsObject, IsPositive, IsString, ValidateNested } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsObject,
+  IsPositive,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Show } from '../entities/show.entity';
 import { OmitType } from '@nestjs/mapped-types';
 import { SeatsByGrades } from '../types/ticket-prices.type';
@@ -27,10 +37,12 @@ export class CreateShowDto extends OmitType(Show, ['id', 'createdAt', 'updatedAt
   readonly image: string;
 
   @IsArray()
-  @IsNotEmpty({ message: '공연 날짜와 시간을 입력해주세요.' })
+  @ArrayNotEmpty({ message: '공연 날짜와 시간을 입력해주세요.' })
+  @Type(() => String)
+  @IsString({ each: true, message: '공연 날짜/시간은 문자열이어야 합니다.' })
   readonly schedules: string[];
 
-  @IsNumber()
+  @IsInt()
   @IsPositive({ message: '공연 시간은 양수이어야 합니다.' })
   @IsNotEmpty({ message: '공연 시간을 입력해주세요.' })
   readonly runtime: number;

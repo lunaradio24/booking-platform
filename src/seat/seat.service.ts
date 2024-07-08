@@ -16,7 +16,7 @@ export class SeatService {
     return `This action returns a #${id} seat`;
   }
 
-  update(id: number, updateSeatDto: UpdateSeatDto) {
+  update(id: number) {
     return `This action updates a #${id} seat`;
   }
 
