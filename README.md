@@ -14,7 +14,8 @@ Typescript, Nest.js
 
 ## ERD
 
-<img width="737" alt="image" src="https://github.com/lunaradio24/booking-platform/assets/91360383/bbbf306d-0146-460f-ad24-2179fcbc3dfe">
+<img width="855" alt="image" src="https://github.com/lunaradio24/booking-platform/assets/91360383/fe628d42-5854-4358-a09b-999665ab2ae8">
+
 
 ## Installation
 
